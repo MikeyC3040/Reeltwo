@@ -115,6 +115,8 @@
   #ifdef HAVE_HWSERIAL1
    #define DEBUG_SERIAL Serial1
   #endif
+ #elif defined(CONFIG_BLUEPAD32_USB_CONSOLE_ENABLE)
+  #define DEBUG_SERIAL Console
  #else
    #define DEBUG_SERIAL Serial
  #endif
@@ -441,7 +443,7 @@ void StealthCommand(String cmd)
         sum += byte(cmd[i]);
     }
     Wire.write(sum);
-    Wire.endTransmission();  
+    Wire.endTransmission();
 }
 
 template <byte i2cAddress = STEALTHI2C>
@@ -455,7 +457,7 @@ void StealthCommand(const char* cmd)
         sum += byte(*cmd);
     }
     Wire.write(sum);
-    Wire.endTransmission();  
+    Wire.endTransmission();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

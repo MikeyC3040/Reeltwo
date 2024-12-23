@@ -13,6 +13,7 @@ RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
 USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+#include "ReelTwo.h"
 
 class CytronSmartDriveDuoDriver
 {
@@ -100,7 +101,7 @@ public:
 
     void motor(int power)
     {
-    	const uint8_t headerByte = 0x85;
+    	const uint8_t headerByte = 0x55;
 
 		// Left motor
 		uint8_t addressByte = fAddress;
@@ -118,24 +119,24 @@ public:
     */
     void motor(int powerLeft, int powerRight)
     {
-        printf("MOTOR{%d}:%d:%d\n", address(), powerLeft, powerRight);
-    	const uint8_t headerByte = 0x85;
+        DEBUG_PRINTF("MOTOR{%d}:%d:%d\n", address(), powerLeft, powerRight);
+    	const uint8_t headerByte = 0x55;
 
 		// Left motor
 		uint8_t addressByte = fAddress;
 		uint8_t commandByte = map(powerLeft, -127, 127, 0, 255);
 		uint8_t checksum = headerByte + addressByte + commandByte;
-		printf("  LEFT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
+		DEBUG_PRINTF("  LEFT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
 		fPort->write(&headerByte, 1);
 		fPort->write(&addressByte, 1);
 		fPort->write(&commandByte, 1);
 		fPort->write(&checksum, 1);
 
 		// Right motor
-		addressByte = (fAddress | 0x40);
+		addressByte = (fAddress | 0x8);
 		commandByte = map(powerRight, -127, 127, 0, 255);
 		checksum = headerByte + addressByte + commandByte;
-		printf("  RIGHT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
+		DEBUG_PRINTF("  RIGHT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
 		fPort->write(&headerByte, 1);
 		fPort->write(&addressByte, 1);
 		fPort->write(&commandByte, 1);

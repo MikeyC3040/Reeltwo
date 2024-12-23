@@ -519,7 +519,7 @@ protected:
 
                 auto x = fDriveThrottle;
                 auto y = fDriveTurning;
-    
+
                 auto target_left = x;
                 auto target_right = y;
                 if (fChannelMixing)
@@ -528,14 +528,14 @@ protected:
                     auto t = atan2(y, x);
                     // rotate 45 degrees
                     t += M_PI / 4;
-        
+
                     target_left = r * cos(t);
                     target_right = r * sin(t);
-        
+
                     // rescale the new coords
                     target_left *= sqrt(2);
                     target_right *= sqrt(2);
-                }    
+                }
                 // clamp to -1/+1 and apply max speed limit
                 target_left = max(-1.0f, min(target_left, 1.0f));
                 target_right = max(-1.0f, min(target_right, 1.0f));
