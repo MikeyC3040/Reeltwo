@@ -19,6 +19,11 @@
   * \endcode
   *
   */
+
+#define MDDS10 0x55
+#define MDDS30 0x80
+#define MDDS60 0x55
+
 class TankDriveCytron: public TankDrive, public CytronSmartDriveDuoDriver
 {
 public:
