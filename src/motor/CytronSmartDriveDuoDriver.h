@@ -13,7 +13,14 @@ RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE
 USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+#ifndef CytronSmartDriveDuoDriver_h
+#define CytronSmartDriveDuoDriver_h
+
 #include "ReelTwo.h"
+
+#define MDDS10 0x55
+#define MDDS30 0x80
+#define MDDS60 0x55
 
 class CytronSmartDriveDuoDriver
 {
@@ -172,19 +179,20 @@ class CytronSmartDriveDuoMDDS10Driver : public CytronSmartDriveDuoDriver
 {
 public:
 	CytronSmartDriveDuoMDDS10Driver(byte address, Stream& port) :
-		CytronSmartDriveDuoDriver(address, port, 0x55) {}
+		CytronSmartDriveDuoDriver(address, port, MDDS10) {}
 };
 
 class CytronSmartDriveDuoMDDS30Driver : public CytronSmartDriveDuoDriver
 {
 public:
 	CytronSmartDriveDuoMDDS30Driver(byte address, Stream& port) :
-		CytronSmartDriveDuoDriver(address, port, 0x80) {}
+		CytronSmartDriveDuoDriver(address, port, MDDS30) {}
 };
 
 class CytronSmartDriveDuoMDDS60Driver : public CytronSmartDriveDuoDriver
 {
 public:
 	CytronSmartDriveDuoMDDS60Driver(byte address, Stream& port) :
-		CytronSmartDriveDuoDriver(address, port, 0x55) {}
+		CytronSmartDriveDuoDriver(address, port, MDDS60) {}
 };
+#endif

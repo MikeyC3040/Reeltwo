@@ -1,7 +1,7 @@
-#ifndef TankDriveCytron_h
-#define TankDriveCytron_h
+#ifndef DomeDriveCytron_h
+#define DomeDriveCytron_h
 
-#include "drive/TankDrive.h"
+#include "drive/DomeDrive.h"
 #include "motor/CytronSmartDriveDuoDriver.h"
 
 /**
@@ -19,8 +19,7 @@
   * \endcode
   *
   */
-
-class TankDriveCytron: public TankDrive, public CytronSmartDriveDuoDriver
+class DomeDriveCytron : public DomeDrive, protected CytronSmartDriveDuoDriver
 {
 public:
     /** \brief Constructor
@@ -29,11 +28,12 @@ public:
       *
       * \param port the port number of this service
       */
-    TankDriveCytron(byte address, HardwareSerial& serial,uint8_t initialByte, JoystickController& driveStick) :
-        TankDrive(driveStick),
+    DomeDriveCytron(byte address, Stream& serial, uint8_t initialByte, JoystickController& domeStick) :
+        DomeDrive(domeStick),
         CytronSmartDriveDuoDriver(address, serial, initialByte)
     {
     }
+
 
     virtual void setup() override
     {
@@ -44,19 +44,22 @@ public:
     virtual void stop() override
     {
         CytronSmartDriveDuoDriver::stop();
-        TankDrive::stop();
+        DomeDrive::stop();
     }
 
 protected:
-    virtual void motor(float left, float right, float throttle) override
+    virtual void motor(float m) override
     {
-        left *= throttle;
-        right *= throttle;
-        MOTOR_DEBUG_PRINT("ST1: ");
-        MOTOR_DEBUG_PRINT((int)(left * 127));
-        MOTOR_DEBUG_PRINT(" ST2: ");
-        MOTOR_DEBUG_PRINTLN((int)(right * 127));
-        CytronSmartDriveDuoDriver::motor(left * 127, right*127);
+        static bool sLastZero;
+        if (!sLastZero || m != 0)
+        {
+            VERBOSE_DOME_DEBUG_PRINT("ST: ");
+            VERBOSE_DOME_DEBUG_PRINTLN((int)(m * 127));
+            sLastZero = (abs(m) == 0);
+        }
+        CytronSmartDriveDuoDriver::motor(m * 127);
     }
+
+    uint16_t fBaudRate;
 };
 #endif
