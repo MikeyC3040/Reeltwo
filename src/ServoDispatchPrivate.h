@@ -306,13 +306,13 @@ public:
     virtual ~ServoDispatchESP32()
     {
         if (attached())
-            ledcDetachPin(fPin);
+            ledcDetach(fPin);
         deallocate();
     }
 
     void detachPin(int pin)
     {
-        ledcDetachPin(pin);
+        ledcDetach(pin);
         deallocate();
     }
     
@@ -479,11 +479,6 @@ private:
                 (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    static double _ledcSetupTimerFreq(uint8_t chan, double freq, uint8_t bit_num)
-    {
-        return ledcSetup(chan, freq, bit_num);
-    }
-
     void attach(int pin)
     {
         fPin = pin;
@@ -496,15 +491,14 @@ private:
         fFreq = freq;
         if (attached())
         {
-            ledcDetachPin(fPin);
+            ledcDetach(fPin);
             // Remove the PWM during frequency adjust
-            _ledcSetupTimerFreq(getChannel(), freq, fResolutionBits);
             writeScaled(dutyScaled);
-            ledcAttachPin(fPin, getChannel()); // re-attach the pin after frequency adjust
+            ledcAttachChannel(fPin,freq,fResolutionBits, getChannel()); // re-attach the pin after frequency adjust
         }
         else
         {
-            _ledcSetupTimerFreq(getChannel(), freq, fResolutionBits);
+            ledcAttachChannel(fPin,freq,fResolutionBits, getChannel()); // re-attach the pin after frequency adjust
             writeScaled(dutyScaled);
         }
     }
@@ -568,12 +562,11 @@ private:
         fResolutionBits = resolution_bits;
         if (attached())
         {
-            ledcDetachPin(fPin);
-            double val = ledcSetup(getChannel(), freq, resolution_bits);
-            attachPin(fPin);
+            ledcDetach(fPin);
+            double val = ledcAttachChannel(fPin,freq, resolution_bits, getChannel());
             return val;
         }
-        return ledcSetup(getChannel(), freq, resolution_bits);
+        return ledcAttachChannel(fPin,freq, resolution_bits, getChannel());
     }
 
     void attachPin(uint8_t pin)
@@ -584,7 +577,7 @@ private:
             return;
         }
         attach(pin);
-        ledcAttachPin(pin, getChannel());
+        ledcAttachChannel(fPin,fFreq, fResolutionBits, getChannel());
     }
 
     void deallocate()

@@ -29,16 +29,16 @@ public:
       *
       * \param port the port number of this service
       */
-    TankDriveCytron(byte address, HardwareSerial& serial,uint8_t initialByte, JoystickController& driveStick) :
+    TankDriveCytron(byte address, Stream& serial,uint8_t initialByte, JoystickController& driveStick,bool bootWait = false): 
         TankDrive(driveStick),
-        CytronSmartDriveDuoDriver(address, serial, initialByte)
+        CytronSmartDriveDuoDriver(address, serial, initialByte),
+        bootWait(bootWait)
     {
     }
 
     virtual void setup() override
     {
-        autobaud(true);
-        CytronSmartDriveDuoDriver::stop();
+        autobaud(bootWait);
     }
 
     virtual void stop() override
@@ -48,6 +48,7 @@ public:
     }
 
 protected:
+    bool bootWait;
     virtual void motor(float left, float right, float throttle) override
     {
         left *= throttle;

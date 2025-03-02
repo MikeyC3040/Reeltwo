@@ -186,9 +186,15 @@
 #else
  #define DEBUG_PRINTF(...) DEBUG_SERIAL.printf(__VA_ARGS__)
 #endif
+#if defined(CONFIG_BLUEPAD32_USB_CONSOLE_ENABLE)
+ #define DEBUG_PRINTLN_HEX(s) while(0)
+ #define DEBUG_PRINT_HEX(s) DEBUG_SERIAL.printhex(s)
+ #define DEBUG_FLUSH() while (0)
+#else
  #define DEBUG_PRINTLN_HEX(s) DEBUG_SERIAL.println(s,HEX)
  #define DEBUG_PRINT_HEX(s) DEBUG_SERIAL.print(s,HEX)
  #define DEBUG_FLUSH() DEBUG_SERIAL.flush()
+#endif
 #else
  #define DEBUG_SERIAL_READY()
  #define DEBUG_PRINTLN(s) while (0)

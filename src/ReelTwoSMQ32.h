@@ -2291,11 +2291,12 @@ private:
         }
     }
 
-    static void msg_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int len)
+    static void msg_recv_cb(const esp_now_recv_info *info, const uint8_t *data, int len)
     {
         SMQRecvMsg msg;
         if (len < sizeof(msg.fData))
         {
+            uint8_t *mac_addr = info->src_addr;
             memcpy(msg.fAddr, mac_addr, sizeof(msg.fAddr));
             memcpy(msg.fData, data, len);
             msg.fSize = len;

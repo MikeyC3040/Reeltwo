@@ -28,17 +28,17 @@ public:
       *
       * \param port the port number of this service
       */
-    DomeDriveCytron(byte address, Stream& serial, uint8_t initialByte, JoystickController& domeStick) :
+    DomeDriveCytron(byte address, Stream& serial, uint8_t initialByte, JoystickController& domeStick, bool bootWait = false) :
         DomeDrive(domeStick),
-        CytronSmartDriveDuoDriver(address, serial, initialByte)
+        CytronSmartDriveDuoDriver(address, serial, initialByte),
+        bootWait(bootWait)
     {
     }
 
 
     virtual void setup() override
     {
-        autobaud(true);
-        CytronSmartDriveDuoDriver::stop();
+        autobaud(bootWait);
     }
 
     virtual void stop() override
@@ -48,18 +48,12 @@ public:
     }
 
 protected:
+    bool bootWait;
     virtual void motor(float m) override
     {
-        static bool sLastZero;
-        if (!sLastZero || m != 0)
-        {
-            VERBOSE_DOME_DEBUG_PRINT("ST: ");
-            VERBOSE_DOME_DEBUG_PRINTLN((int)(m * 127));
-            sLastZero = (abs(m) == 0);
-        }
-        CytronSmartDriveDuoDriver::motor(m * 127);
+        DOME_DEBUG_PRINT("DM: ");
+        DOME_DEBUG_PRINTLN((int)(m * 127));
+        CytronSmartDriveDuoDriver::motor(m * 127,0);
     }
-
-    uint16_t fBaudRate;
 };
 #endif

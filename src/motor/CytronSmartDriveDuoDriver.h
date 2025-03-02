@@ -22,6 +22,20 @@ USE OR PERFORMANCE OF THIS SOFTWARE.
 #define MDDS30 0x80
 #define MDDS60 0x55
 
+#ifdef USE_DRIVER_DEBUG
+#define DRIVER_DEBUG_PRINT(s) DEBUG_PRINT(s)
+#define DRIVER_DEBUG_PRINTLN(s) DEBUG_PRINTLN(s)
+#define DRIVER_DEBUG_PRINT_HEX(s) DEBUG_PRINT_HEX(s)
+#define DRIVER_DEBUG_PRINTLN_HEX(s) DEBUG_PRINTLN_HEX(s)
+#define DRIVER_DEBUG_PRINTF(...) DEBUG_PRINTF(__VA_ARGS__)
+#else
+#define DRIVER_DEBUG_PRINT(s)
+#define DRIVER_DEBUG_PRINTLN(s)
+#define DRIVER_DEBUG_PRINT_HEX(s)
+#define DRIVER_DEBUG_PRINTLN_HEX(s)
+#define DRIVER_DEBUG_PRINTF(...)
+#endif
+
 class CytronSmartDriveDuoDriver
 {
 public:
@@ -126,14 +140,14 @@ public:
     */
     void motor(int powerLeft, int powerRight)
     {
-        DEBUG_PRINTF("MOTOR{%d}:%d:%d\n", address(), powerLeft, powerRight);
+        DRIVER_DEBUG_PRINTF("MOTOR{%d}:%d:%d\n", address(), powerLeft, powerRight);
     	const uint8_t headerByte = 0x55;
 
 		// Left motor
 		uint8_t addressByte = fAddress;
 		uint8_t commandByte = map(powerLeft, -127, 127, 0, 255);
 		uint8_t checksum = headerByte + addressByte + commandByte;
-		DEBUG_PRINTF("  LEFT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
+		DRIVER_DEBUG_PRINTF("  LEFT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
 		fPort->write(&headerByte, 1);
 		fPort->write(&addressByte, 1);
 		fPort->write(&commandByte, 1);
@@ -143,7 +157,7 @@ public:
 		addressByte = (fAddress | 0x8);
 		commandByte = map(powerRight, -127, 127, 0, 255);
 		checksum = headerByte + addressByte + commandByte;
-		DEBUG_PRINTF("  RIGHT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
+		DRIVER_DEBUG_PRINTF("  RIGHT: address=%02X cmd=%02X checksum=%02X\n", addressByte, commandByte, checksum);
 		fPort->write(&headerByte, 1);
 		fPort->write(&addressByte, 1);
 		fPort->write(&commandByte, 1);
