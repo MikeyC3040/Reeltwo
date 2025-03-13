@@ -319,12 +319,12 @@ public:
     void attachPin(uint8_t pin, double freq, uint8_t resolution_bits = 10)
     {
         if (validPWM(pin)) {
-            double pfreq = setup(freq, resolution_bits);
+            bool pfreq = setup(pin, freq, resolution_bits);
             if (pfreq == 0) {
                 DEBUG_PRINT("PWM: FAILED TO ATTACH PIN: "); DEBUG_PRINTLN(pin);
             }
+            attach(pin);
         }
-        attachPin(pin);
     }
 
     inline bool attached()
@@ -335,7 +335,7 @@ public:
     void write(uint32_t duty)
     {
         fDuty = duty;
-        ledcWrite(getChannel(), duty);
+        ledcWrite(getPin(), duty);
     }
 
     void writeScaled(float duty)
@@ -503,7 +503,7 @@ private:
         }
     }
 
-    double setup(double freq, uint8_t resolution_bits = 10)
+    bool setup(int pin, double freq, uint8_t resolution_bits = 10)
     {
         auto priv = privates();
         auto timerCount = priv->timerCount;
@@ -562,22 +562,11 @@ private:
         fResolutionBits = resolution_bits;
         if (attached())
         {
-            ledcDetach(fPin);
-            double val = ledcAttachChannel(fPin,freq, resolution_bits, getChannel());
+            ledcDetach(pin);
+            bool val = ledcAttachChannel(pin,freq, resolution_bits, getChannel());
             return val;
         }
-        return ledcAttachChannel(fPin,freq, resolution_bits, getChannel());
-    }
-
-    void attachPin(uint8_t pin)
-    {
-        if (!validPWM(pin))
-        {
-            DEBUG_PRINTLN("PWM pin not valid!");
-            return;
-        }
-        attach(pin);
-        ledcAttachChannel(fPin,fFreq, fResolutionBits, getChannel());
+        return ledcAttachChannel(pin,freq, resolution_bits, getChannel());
     }
 
     void deallocate()
